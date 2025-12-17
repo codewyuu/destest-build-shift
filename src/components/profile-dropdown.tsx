@@ -1,8 +1,8 @@
 import { Link } from '@tanstack/react-router'
+import { useProfileStore } from '@/stores/profile-store'
 import useDialogState from '@/hooks/use-dialog-state'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { useProfileStore } from '@/stores/profile-store'
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -58,7 +58,10 @@ function DialogContent({
   portalContainer?: HTMLElement | null
 }) {
   return (
-    <DialogPortal data-slot='dialog-portal' container={portalContainer ?? undefined}>
+    <DialogPortal
+      data-slot='dialog-portal'
+      container={portalContainer ?? undefined}
+    >
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot='dialog-content'

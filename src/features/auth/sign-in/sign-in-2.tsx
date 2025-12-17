@@ -1,5 +1,4 @@
 import Image from 'next/image'
-
 import { Logo } from '@/assets/logo'
 import { cn } from '@/lib/utils'
 import dashboardDark from './assets/dashboard-dark.png'
@@ -46,9 +45,7 @@ export function SignIn2() {
       </div>
 
       <div
-        className={cn(
-          'bg-muted relative h-full overflow-hidden max-lg:hidden'
-        )}
+        className={cn('bg-muted relative h-full overflow-hidden max-lg:hidden')}
       >
         <div className='absolute top-[15%] left-20 h-full w-full dark:hidden'>
           <Image

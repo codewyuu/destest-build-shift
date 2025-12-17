@@ -10,7 +10,14 @@ type HeaderProps = React.HTMLAttributes<HTMLElement> & {
   ref?: React.Ref<HTMLElement>
 }
 
-export function Header({ className, fixed, children, renderSidebarTrigger = false, leftAction, ...props }: HeaderProps) {
+export function Header({
+  className,
+  fixed,
+  children,
+  renderSidebarTrigger = false,
+  leftAction,
+  ...props
+}: HeaderProps) {
   const [offset, setOffset] = useState(0)
   const headerRef = useRef<HTMLElement | null>(null)
 
@@ -20,7 +27,10 @@ export function Header({ className, fixed, children, renderSidebarTrigger = fals
       while (parent) {
         const style = window.getComputedStyle(parent)
         const oy = style.overflowY
-        if ((oy === 'auto' || oy === 'scroll') && parent.scrollHeight > parent.clientHeight) {
+        if (
+          (oy === 'auto' || oy === 'scroll') &&
+          parent.scrollHeight > parent.clientHeight
+        ) {
           return parent
         }
         parent = parent.parentElement
@@ -62,7 +72,8 @@ export function Header({ className, fixed, children, renderSidebarTrigger = fals
         className={cn(
           'relative flex h-full items-center gap-3 p-4 sm:gap-4',
           // Always show frosted overlay when header is fixed (mobile + desktop)
-          fixed && 'after:bg-background/20 after:absolute after:inset-0 after:-z-10 after:backdrop-blur-lg'
+          fixed &&
+            'after:bg-background/20 after:absolute after:inset-0 after:-z-10 after:backdrop-blur-lg'
         )}
       >
         {renderSidebarTrigger ? (

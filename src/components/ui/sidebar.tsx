@@ -21,6 +21,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import Dither from '@/components/Dither'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -136,7 +137,7 @@ function SidebarProvider({
             } as React.CSSProperties
           }
           className={cn(
-            'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar dark:has-data-[variant=inset]:bg-[oklch(0.96_0_0)] flex min-h-svh w-full',
+            'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full dark:has-data-[variant=inset]:bg-[oklch(0.96_0_0)]',
             className
           )}
           {...props}
@@ -306,16 +307,18 @@ function SidebarRail({ className, ...props }: React.ComponentProps<'button'>) {
   )
 }
 
-import Dither from '@/components/Dither'
-
-function SidebarInset({ className, children, ...props }: React.ComponentProps<'div'>) {
+function SidebarInset({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot='sidebar-inset'
       className={cn(
         'relative flex w-full flex-1 flex-col',
         // Desktop inset: constrain to viewport height so inner content can scroll
-        'md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ms-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:overflow-hidden md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ms-2 md:peer-data-[variant=inset]:h-[calc(100svh-(var(--spacing)*4))]',
+        'md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ms-0 md:peer-data-[variant=inset]:h-[calc(100svh-(var(--spacing)*4))] md:peer-data-[variant=inset]:overflow-hidden md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ms-2',
         className
       )}
       {...props}
@@ -323,15 +326,17 @@ function SidebarInset({ className, children, ...props }: React.ComponentProps<'d
       {/* Dither background replacing white content area */}
       {/* Use fixed positioning on mobile to span the entire viewport.
           On desktop, keep it absolute so it clips to the rounded inset container. */}
-      <div className='fixed inset-0 md:absolute md:inset-0 -z-0 pointer-events-none'>
+      <div className='pointer-events-none fixed inset-0 -z-0 md:absolute md:inset-0'>
         <Dither />
       </div>
       {/* Foreground content */}
-      <div className={cn(
-        'relative z-10 md:h-full md:min-h-0 md:overflow-y-auto md:[-webkit-overflow-scrolling:touch] no-scrollbar md:no-scrollbar',
-        // If the content has a fixed layout, disable the default scroll behavior
-        'has-[[data-layout=fixed]]:md:overflow-hidden'
-      )}>
+      <div
+        className={cn(
+          'no-scrollbar md:no-scrollbar relative z-10 md:h-full md:min-h-0 md:overflow-y-auto md:[-webkit-overflow-scrolling:touch]',
+          // If the content has a fixed layout, disable the default scroll behavior
+          'has-[[data-layout=fixed]]:md:overflow-hidden'
+        )}
+      >
         {children}
       </div>
     </div>
@@ -394,7 +399,7 @@ function SidebarContent({ className, ...props }: React.ComponentProps<'div'>) {
       data-slot='sidebar-content'
       data-sidebar='content'
       className={cn(
-        'flex min-h-0 flex-1 flex-col gap-2 overflow-auto no-scrollbar group-data-[collapsible=icon]:overflow-hidden',
+        'no-scrollbar flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden',
         className
       )}
       {...props}
@@ -744,4 +749,3 @@ export {
   SidebarTrigger,
   useSidebar,
 }
-

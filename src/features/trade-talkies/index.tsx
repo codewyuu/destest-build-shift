@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Plus, MoreVertical, ChevronRight, X } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Header } from '@/components/layout/header'
-import { Main } from '@/components/layout/main'
-import { Search } from '@/components/search'
-import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Tabs, TabsContent } from '@/components/ui/tabs'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,18 +19,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Switch } from '@/components/ui/switch'
+import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Badge } from '@/components/ui/badge'
-import { Plus, MoreVertical, ChevronRight, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from '@/components/ui/sidebar'
+import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsContent } from '@/components/ui/tabs'
+import { Header } from '@/components/layout/header'
+import { Main } from '@/components/layout/main'
+import { Search } from '@/components/search'
+import { ChatInputBar } from './components/chat-input-bar'
 import { RoomsSidebarInline } from './components/rooms-sidebar-inline'
 import { RoomsSidebarSheet } from './components/rooms-sidebar-sheet'
-import { ChatInputBar } from './components/chat-input-bar'
 import { ScrollToLatestButton } from './components/scroll-to-latest-button'
-import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar'
 
 type Role = 'owner' | 'admin' | 'moderator' | 'member'
 type Message = { id: string; senderId: string; text: string; timestamp: string }
@@ -70,11 +79,15 @@ function getSenderInfo(message: Message, room: Room | null) {
   if (message.senderId === 'you') {
     const badge = roleToBadge(room?.role ?? 'member')
     // Prefer the member named "You" if present
-    const youName = room?.members.find((m) => m.name.toLowerCase() === 'you')?.name ?? 'You'
+    const youName =
+      room?.members.find((m) => m.name.toLowerCase() === 'you')?.name ?? 'You'
     return { name: youName, badge }
   }
   const member = room?.members.find((m) => m.id === message.senderId)
-  return { name: member?.name ?? 'User', badge: roleToBadge(member?.role ?? 'member') }
+  return {
+    name: member?.name ?? 'User',
+    badge: roleToBadge(member?.role ?? 'member'),
+  }
 }
 
 const initialRooms: Room[] = [
@@ -140,8 +153,12 @@ const initialRooms: Room[] = [
 export function TradeTalkies() {
   const [tab, setTab] = useState<'discover' | 'myRooms'>('myRooms')
   const [rooms, setRooms] = useState<Room[]>(initialRooms)
-  const [selectedRoomId, setSelectedRoomId] = useState<string>(initialRooms[0]?.id)
-  const [selectedChannelId, setSelectedChannelId] = useState<string>(initialRooms[0]?.channels[0]?.id)
+  const [selectedRoomId, setSelectedRoomId] = useState<string>(
+    initialRooms[0]?.id
+  )
+  const [selectedChannelId, setSelectedChannelId] = useState<string>(
+    initialRooms[0]?.channels[0]?.id
+  )
   const [createRoomOpen, setCreateRoomOpen] = useState(false)
   const [createRoomStep, setCreateRoomStep] = useState(1)
   const [createChannelOpen, setCreateChannelOpen] = useState(false)
@@ -159,21 +176,28 @@ export function TradeTalkies() {
   const closeTimerRef = useRef<number | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement | null>(null)
   const [atBottom, setAtBottom] = useState(true)
-  
+
   const [previewActive, setPreviewActive] = useState(false)
 
-  const selectedRoom = useMemo(() => rooms.find((r) => r.id === selectedRoomId) || null, [rooms, selectedRoomId])
+  const selectedRoom = useMemo(
+    () => rooms.find((r) => r.id === selectedRoomId) || null,
+    [rooms, selectedRoomId]
+  )
   const selectedChannel = useMemo(
-    () => selectedRoom?.channels.find((c) => c.id === selectedChannelId) || null,
+    () =>
+      selectedRoom?.channels.find((c) => c.id === selectedChannelId) || null,
     [selectedRoom, selectedChannelId]
   )
 
   const isJoined = selectedRoom?.joined ?? false
 
-  const canManage = selectedRoom ? ['owner', 'admin'].includes(selectedRoom.role) : false
-  const canModerate = selectedRoom ? ['owner', 'admin', 'moderator'].includes(selectedRoom.role) : false
+  const canManage = selectedRoom
+    ? ['owner', 'admin'].includes(selectedRoom.role)
+    : false
+  const canModerate = selectedRoom
+    ? ['owner', 'admin', 'moderator'].includes(selectedRoom.role)
+    : false
 
-  
   // Track scroll position to show/hide the older-messages banner
   // and smoothly jump to the latest messages when requested.
   const handleScrollCheck = () => {
@@ -220,12 +244,12 @@ export function TradeTalkies() {
   const createRoom = () => {
     const name = roomName.trim()
     if (!name) return
-    const tags = (roomTagList.length
+    const tags = roomTagList.length
       ? roomTagList
       : roomTags
           .split(',')
           .map((t) => t.trim().toLowerCase())
-          .filter((t) => t.length > 0))
+          .filter((t) => t.length > 0)
     const newRoom: Room = {
       id: `room-${Date.now()}`,
       name,
@@ -234,7 +258,12 @@ export function TradeTalkies() {
       role: 'owner',
       joined: true,
       channels: [
-        { id: `chan-${Date.now()}`, name: 'general', type: 'text', messages: [] },
+        {
+          id: `chan-${Date.now()}`,
+          name: 'general',
+          type: 'text',
+          messages: [],
+        },
       ],
       members: [{ id: 'you', name: 'You', role: 'owner' }],
       tags: tags.length ? tags : undefined,
@@ -269,10 +298,17 @@ export function TradeTalkies() {
     if (!selectedRoom) return
     const name = channelName.trim()
     if (!name) return
-    const newChan: Channel = { id: `chan-${Date.now()}`, name, type: 'text', messages: [] }
+    const newChan: Channel = {
+      id: `chan-${Date.now()}`,
+      name,
+      type: 'text',
+      messages: [],
+    }
     setRooms((prev) =>
       prev.map((room) =>
-        room.id === selectedRoom.id ? { ...room, channels: [...room.channels, newChan] } : room
+        room.id === selectedRoom.id
+          ? { ...room, channels: [...room.channels, newChan] }
+          : room
       )
     )
     setSelectedChannelId(newChan.id)
@@ -285,7 +321,12 @@ export function TradeTalkies() {
     setRooms((prev) =>
       prev.map((room) =>
         room.id === roomId
-          ? { ...room, role: room.role || 'member', memberCount: room.memberCount + 1, joined: true }
+          ? {
+              ...room,
+              role: room.role || 'member',
+              memberCount: room.memberCount + 1,
+              joined: true,
+            }
           : room
       )
     )
@@ -310,10 +351,10 @@ export function TradeTalkies() {
         renderSidebarTrigger={false}
         leftAction={
           <Button
-            variant="outline"
-            size="icon"
-            className="bg-black/8 dark:bg-white/12 backdrop-blur-md border border-black/10 dark:border-white/20"
-            aria-label="Open communities sidebar"
+            variant='outline'
+            size='icon'
+            className='border border-black/10 bg-black/8 backdrop-blur-md dark:border-white/20 dark:bg-white/12'
+            aria-label='Open communities sidebar'
             onClick={() => setSidebarOpen((prev) => !prev)}
             onMouseEnter={() => {
               if (!isMobile) {
@@ -335,7 +376,7 @@ export function TradeTalkies() {
             onFocus={() => !isMobile && setSidebarOpen(true)}
             onBlur={() => !isMobile && setSidebarOpen(false)}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className='h-4 w-4' />
           </Button>
         }
       >
@@ -345,11 +386,19 @@ export function TradeTalkies() {
         </div>
       </Header>
 
-      <Main fixed fluid className='relative flex h-full overflow-hidden px-0 py-0'>
+      <Main
+        fixed
+        fluid
+        className='relative flex h-full overflow-hidden px-0 py-0'
+      >
         {!isMobile && (
           <RoomsSidebarInline
             open={sidebarOpen}
-            rooms={rooms.map((r) => ({ id: r.id, name: r.name, memberCount: r.memberCount }))}
+            rooms={rooms.map((r) => ({
+              id: r.id,
+              name: r.name,
+              memberCount: r.memberCount,
+            }))}
             selectedRoomId={selectedRoomId}
             onSelectRoom={(id) => {
               setTab('myRooms')
@@ -369,295 +418,398 @@ export function TradeTalkies() {
           />
         )}
 
-        <div className='relative flex flex-1 min-h-0 flex-col gap-3 sm:gap-4 px-4 sm:px-6'>
+        <div className='relative flex min-h-0 flex-1 flex-col gap-3 px-4 sm:gap-4 sm:px-6'>
           {/* Removed page heading and description to maximize chat area */}
 
           <Tabs
             value={tab}
             onValueChange={(v) => setTab(v as 'discover' | 'myRooms')}
-            className='w-full flex-1 min-h-0 overflow-hidden'
+            className='min-h-0 w-full flex-1 overflow-hidden'
           >
-          {/* Removed top tabs trigger to hide 'My Rooms' button above columns */}
+            {/* Removed top tabs trigger to hide 'My Rooms' button above columns */}
 
-          {/* My Rooms: show channels column on the left (desktop) and widened chat */}
-          <TabsContent value='myRooms' className='min-h-0 overflow-hidden'>
-            {/* Top preview banner */}
-            {previewActive && !isJoined && (
-              <div className='mx-0 mb-3 rounded-none bg-blue-600 px-4 py-2 text-blue-50 md:rounded-2xl'>
-                <div className='flex items-center justify-between'>
-                  <p className='text-sm'>You’re in preview mode. Join this community to start chatting.</p>
-                  {selectedRoom && (
-                    <Button size='sm' variant='secondary' className='bg-blue-50 text-blue-700 hover:bg-blue-100'
-                      onClick={() => joinRoom(selectedRoom.id)}
-                    >
-                      Join
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )}
-            <div className='grid grid-cols-1 md:grid-cols-[300px_minmax(0,1fr)] gap-3 sm:gap-4 flex-1 min-h-0'>
-              {/* Channels column (desktop) */}
-              {!isMobile && (
-                <Card className='relative min-w-0 min-h-0 overflow-hidden p-0 h-[calc(100svh-96px)] rounded-2xl bg-black/8 dark:bg-white/12 backdrop-blur-md border border-black/12 dark:border-white/25 ring-1 ring-black/10 dark:ring-white/20 shadow-[0_6px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_6px_20px_rgba(255,255,255,0.10)]'>
-                  <div className='border-border flex items-center justify-between border-b px-4 py-2'>
-                    <div className='min-w-0'>
-                      <div className='flex items-center gap-2'>
-                        <span className='font-medium'>Channels</span>
-                      </div>
-                    </div>
-                    {canModerate && (
-                      <Button variant='outline' size='icon' onClick={() => setCreateChannelOpen(true)} aria-label='Create channel'>
-                        <Plus className='h-4 w-4' />
+            {/* My Rooms: show channels column on the left (desktop) and widened chat */}
+            <TabsContent value='myRooms' className='min-h-0 overflow-hidden'>
+              {/* Top preview banner */}
+              {previewActive && !isJoined && (
+                <div className='mx-0 mb-3 rounded-none bg-blue-600 px-4 py-2 text-blue-50 md:rounded-2xl'>
+                  <div className='flex items-center justify-between'>
+                    <p className='text-sm'>
+                      You’re in preview mode. Join this community to start
+                      chatting.
+                    </p>
+                    {selectedRoom && (
+                      <Button
+                        size='sm'
+                        variant='secondary'
+                        className='bg-blue-50 text-blue-700 hover:bg-blue-100'
+                        onClick={() => joinRoom(selectedRoom.id)}
+                      >
+                        Join
                       </Button>
                     )}
                   </div>
-                  <ScrollArea className='h-[calc(100%-44px)] px-2 pb-4'>
-                    <SidebarMenu className='gap-2'>
-                      {selectedRoom?.channels.map((ch) => (
-                        <SidebarMenuItem key={ch.id}>
-                          <SidebarMenuButton
-                            asChild
-                            size='lg'
-                            isActive={selectedChannelId === ch.id}
-                            className='rounded-lg px-3 py-2'
-                          >
-                            <button type='button' className='w-full text-left' onClick={() => setSelectedChannelId(ch.id)}>
-                              <div className='min-w-0'>
-                                <span className='truncate font-medium'># {ch.name}</span>
-                              </div>
-                            </button>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      ))}
-                      {(!selectedRoom || selectedRoom.channels.length === 0) && (
-                        <div className='px-3 py-2 text-xs text-muted-foreground'>No channels yet.</div>
-                      )}
-                    </SidebarMenu>
-                  </ScrollArea>
-                </Card>
-              )}
-
-              {/* Chat window */}
-              <Card className='relative grid grid-rows-[auto_1fr_auto] min-w-0 min-h-0 overflow-hidden p-0 h-[calc(100svh-96px)] w-full max-w-none rounded-2xl bg-black/8 dark:bg-white/12 backdrop-blur-md border border-black/12 dark:border-white/25 ring-1 ring-black/10 dark:ring-white/20 shadow-[0_6px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_6px_20px_rgba(255,255,255,0.10)]'>
-                {/* Channel header with admin actions */}
-                <div className='border-border flex items-center justify-between border-b px-4 py-2'>
-                  <div className='min-w-0'>
-                    <div className='flex items-center gap-2'>
-                      <span className='font-medium'># {selectedChannel?.name ?? 'select-channel'}</span>
-                      <span className='text-muted-foreground text-xs'>in {selectedRoom?.name}</span>
-                    </div>
-                  </div>
-                  {canManage && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button size='icon' variant='ghost'>
-                          <MoreVertical className='h-4 w-4' />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align='end'>
-                        <DropdownMenuLabel>Room Admin</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => setInviteOpen(true)}>Copy invite link</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem disabled>Manage members</DropdownMenuItem>
-                        <DropdownMenuItem disabled>Manage roles</DropdownMenuItem>
-                        <DropdownMenuItem disabled>Room settings</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
                 </div>
-
-                {/* Messages viewport */}
-                <div
-                  ref={messagesContainerRef}
-                  className={cn('overflow-auto p-4')}
-                  data-slot='tt-messages-viewport'
-                  onScroll={handleScrollCheck}
-                >
-                  <div className='space-y-6'>
-                    {selectedChannel?.messages.map((message, idx, arr) => {
-                      const currentDay = new Date(message.timestamp).toDateString()
-                      const prevDay = idx > 0 ? new Date(arr[idx - 1].timestamp).toDateString() : null
-                      const showDayDivider = currentDay !== prevDay
-                      const sender = getSenderInfo(message, selectedRoom)
-                      const dateStr = new Date(message.timestamp).toLocaleDateString([], {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                      })
-                      const timeStr = new Date(message.timestamp).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })
-                      return (
-                        <div key={message.id} className='space-y-3'>
-                          {showDayDivider && (
-                            <div className='flex items-center gap-3'>
-                              <div className='h-px flex-1 bg-border' />
-                              <div className='text-muted-foreground text-xs'>
-                                {new Date(message.timestamp).toLocaleDateString([], {
-                                  day: '2-digit',
-                                  month: 'short',
-                                  year: 'numeric',
-                                })}
-                              </div>
-                              <div className='h-px flex-1 bg-border' />
-                            </div>
-                          )}
-                          <div className={cn('flex', message.senderId === 'you' ? 'justify-end' : 'justify-start')}>
-                            <div
-                              className={cn(
-                                'max-w-[80%] rounded-2xl px-4 py-3 shadow-sm ring-1',
-                                message.senderId === 'you'
-                                  ? 'bg-primary text-primary-foreground ring-primary/20'
-                                  : 'bg-black/6 dark:bg-white/10 text-foreground ring-black/10 dark:ring-white/15'
-                              )}
+              )}
+              <div className='grid min-h-0 flex-1 grid-cols-1 gap-3 sm:gap-4 md:grid-cols-[300px_minmax(0,1fr)]'>
+                {/* Channels column (desktop) */}
+                {!isMobile && (
+                  <Card className='relative h-[calc(100svh-96px)] min-h-0 min-w-0 overflow-hidden rounded-2xl border border-black/12 bg-black/8 p-0 shadow-[0_6px_20px_rgba(0,0,0,0.12)] ring-1 ring-black/10 backdrop-blur-md dark:border-white/25 dark:bg-white/12 dark:shadow-[0_6px_20px_rgba(255,255,255,0.10)] dark:ring-white/20'>
+                    <div className='border-border flex items-center justify-between border-b px-4 py-2'>
+                      <div className='min-w-0'>
+                        <div className='flex items-center gap-2'>
+                          <span className='font-medium'>Channels</span>
+                        </div>
+                      </div>
+                      {canModerate && (
+                        <Button
+                          variant='outline'
+                          size='icon'
+                          onClick={() => setCreateChannelOpen(true)}
+                          aria-label='Create channel'
+                        >
+                          <Plus className='h-4 w-4' />
+                        </Button>
+                      )}
+                    </div>
+                    <ScrollArea className='h-[calc(100%-44px)] px-2 pb-4'>
+                      <SidebarMenu className='gap-2'>
+                        {selectedRoom?.channels.map((ch) => (
+                          <SidebarMenuItem key={ch.id}>
+                            <SidebarMenuButton
+                              asChild
+                              size='lg'
+                              isActive={selectedChannelId === ch.id}
+                              className='rounded-lg px-3 py-2'
                             >
-                              <div className='flex items-center justify-between mb-1 text-[11px]'>
-                                <div className='flex items-center gap-2'>
-                                  <span className='font-medium'>{sender.name}</span>
-                                  <span className='inline-flex items-center rounded-full border border-black/12 dark:border-white/20 bg-black/8 dark:bg-white/12 px-2 py-0.5 text-[10px] uppercase tracking-wide'>
-                                    {sender.badge}
+                              <button
+                                type='button'
+                                className='w-full text-left'
+                                onClick={() => setSelectedChannelId(ch.id)}
+                              >
+                                <div className='min-w-0'>
+                                  <span className='truncate font-medium'>
+                                    # {ch.name}
                                   </span>
                                 </div>
-                                <span className='text-muted-foreground'>{dateStr} {timeStr}</span>
-                              </div>
-                              <p className='text-sm'>{message.text}</p>
-                            </div>
+                              </button>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        ))}
+                        {(!selectedRoom ||
+                          selectedRoom.channels.length === 0) && (
+                          <div className='text-muted-foreground px-3 py-2 text-xs'>
+                            No channels yet.
                           </div>
-                        </div>
-                      )
-                    })}
-                    {!selectedChannel && (
-                      <p className='text-muted-foreground'>Select a channel to start chatting. Create channels for topics you love.</p>
+                        )}
+                      </SidebarMenu>
+                    </ScrollArea>
+                  </Card>
+                )}
+
+                {/* Chat window */}
+                <Card className='relative grid h-[calc(100svh-96px)] min-h-0 w-full max-w-none min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden rounded-2xl border border-black/12 bg-black/8 p-0 shadow-[0_6px_20px_rgba(0,0,0,0.12)] ring-1 ring-black/10 backdrop-blur-md dark:border-white/25 dark:bg-white/12 dark:shadow-[0_6px_20px_rgba(255,255,255,0.10)] dark:ring-white/20'>
+                  {/* Channel header with admin actions */}
+                  <div className='border-border flex items-center justify-between border-b px-4 py-2'>
+                    <div className='min-w-0'>
+                      <div className='flex items-center gap-2'>
+                        <span className='font-medium'>
+                          # {selectedChannel?.name ?? 'select-channel'}
+                        </span>
+                        <span className='text-muted-foreground text-xs'>
+                          in {selectedRoom?.name}
+                        </span>
+                      </div>
+                    </div>
+                    {canManage && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button size='icon' variant='ghost'>
+                            <MoreVertical className='h-4 w-4' />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align='end'>
+                          <DropdownMenuLabel>Room Admin</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => setInviteOpen(true)}>
+                            Copy invite link
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem disabled>
+                            Manage members
+                          </DropdownMenuItem>
+                          <DropdownMenuItem disabled>
+                            Manage roles
+                          </DropdownMenuItem>
+                          <DropdownMenuItem disabled>
+                            Room settings
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     )}
                   </div>
-                </div>
 
-                {/* Down-arrow to jump to latest, positioned above the chat bar */}
-                <div className='pointer-events-none absolute left-0 right-0' style={{ bottom: !isMobile ? 88 : 64 }}>
-                  <ScrollToLatestButton
-                    visible={!atBottom}
-                    onClick={() => {
-                      const el = messagesContainerRef.current
-                      if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-                    }}
-                  />
-                </div>
-
-                {/* Bottom chat bar inside chat window (sticky within card) */}
-                <ChatInputBar
-                  position={isMobile ? 'sticky' : 'inline'}
-                  className={cn(previewActive && !isJoined ? 'opacity-60 pointer-events-none' : '')}
-                  placeholder={previewActive && !isJoined ? 'Join to start chatting' : `Message #${selectedChannel?.name ?? 'channel'}`}
-                  onSubmit={(text) => {
-                    if (!selectedRoom || !selectedChannel) return
-                    if (previewActive && !isJoined) return
-                    const trimmed = text.trim()
-                    if (!trimmed) return
-                    setRooms((prev) =>
-                      prev.map((room) =>
-                        room.id === selectedRoom.id
-                          ? {
-                              ...room,
-                              channels: room.channels.map((ch) =>
-                                ch.id === selectedChannel.id
-                                  ? {
-                                      ...ch,
-                                      messages: [
-                                        ...ch.messages,
-                                        {
-                                          id: Date.now().toString(),
-                                          senderId: 'you',
-                                          text: trimmed,
-                                          timestamp: new Date().toISOString(),
-                                        },
-                                      ],
-                                    }
-                                  : ch
-                              ),
-                            }
-                          : room
-                      )
-                    )
-                    const el = messagesContainerRef.current
-                    if (el) {
-                      requestAnimationFrame(() => {
-                        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-                      })
-                    }
-                  }}
-                  leftOffset={0}
-                />
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Discover: Join public rooms */}
-          <TabsContent value='discover' className='space-y-4'>
-            {/* Discover container with dock-style glassmorphic theme */}
-            <Card className='rounded-2xl p-0 h-[calc(100svh-96px)] overflow-hidden bg-black/8 dark:bg-white/12 backdrop-blur-md border border-black/12 dark:border-white/25 ring-1 ring-black/10 dark:ring-white/20 shadow-[0_6px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_6px_20px_rgba(255,255,255,0.10)]'>
-              <ScrollArea className='h-[calc(100svh-96px)]'>
-                <div className='p-6'>
-                  <div className='mb-4'>
-                    <h3 className='text-xl font-semibold'>Discover communities</h3>
-                    <p className='text-muted-foreground text-sm'>Find welcoming rooms by topic, region, or stocks.</p>
+                  {/* Messages viewport */}
+                  <div
+                    ref={messagesContainerRef}
+                    className={cn('overflow-auto p-4')}
+                    data-slot='tt-messages-viewport'
+                    onScroll={handleScrollCheck}
+                  >
+                    <div className='space-y-6'>
+                      {selectedChannel?.messages.map((message, idx, arr) => {
+                        const currentDay = new Date(
+                          message.timestamp
+                        ).toDateString()
+                        const prevDay =
+                          idx > 0
+                            ? new Date(arr[idx - 1].timestamp).toDateString()
+                            : null
+                        const showDayDivider = currentDay !== prevDay
+                        const sender = getSenderInfo(message, selectedRoom)
+                        const dateStr = new Date(
+                          message.timestamp
+                        ).toLocaleDateString([], {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })
+                        const timeStr = new Date(
+                          message.timestamp
+                        ).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                        return (
+                          <div key={message.id} className='space-y-3'>
+                            {showDayDivider && (
+                              <div className='flex items-center gap-3'>
+                                <div className='bg-border h-px flex-1' />
+                                <div className='text-muted-foreground text-xs'>
+                                  {new Date(
+                                    message.timestamp
+                                  ).toLocaleDateString([], {
+                                    day: '2-digit',
+                                    month: 'short',
+                                    year: 'numeric',
+                                  })}
+                                </div>
+                                <div className='bg-border h-px flex-1' />
+                              </div>
+                            )}
+                            <div
+                              className={cn(
+                                'flex',
+                                message.senderId === 'you'
+                                  ? 'justify-end'
+                                  : 'justify-start'
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  'max-w-[80%] rounded-2xl px-4 py-3 shadow-sm ring-1',
+                                  message.senderId === 'you'
+                                    ? 'bg-primary text-primary-foreground ring-primary/20'
+                                    : 'text-foreground bg-black/6 ring-black/10 dark:bg-white/10 dark:ring-white/15'
+                                )}
+                              >
+                                <div className='mb-1 flex items-center justify-between text-[11px]'>
+                                  <div className='flex items-center gap-2'>
+                                    <span className='font-medium'>
+                                      {sender.name}
+                                    </span>
+                                    <span className='inline-flex items-center rounded-full border border-black/12 bg-black/8 px-2 py-0.5 text-[10px] tracking-wide uppercase dark:border-white/20 dark:bg-white/12'>
+                                      {sender.badge}
+                                    </span>
+                                  </div>
+                                  <span className='text-muted-foreground'>
+                                    {dateStr} {timeStr}
+                                  </span>
+                                </div>
+                                <p className='text-sm'>{message.text}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                      {!selectedChannel && (
+                        <p className='text-muted-foreground'>
+                          Select a channel to start chatting. Create channels
+                          for topics you love.
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div className='mb-6 flex gap-2'>
-                    <Input
-                      value={discoverQuery}
-                      onChange={(e) => setDiscoverQuery(e.target.value)}
-                      placeholder='Search communities…'
-                      aria-label='Search communities'
-                      className='max-w-md'
+
+                  {/* Down-arrow to jump to latest, positioned above the chat bar */}
+                  <div
+                    className='pointer-events-none absolute right-0 left-0'
+                    style={{ bottom: !isMobile ? 88 : 64 }}
+                  >
+                    <ScrollToLatestButton
+                      visible={!atBottom}
+                      onClick={() => {
+                        const el = messagesContainerRef.current
+                        if (el)
+                          el.scrollTo({
+                            top: el.scrollHeight,
+                            behavior: 'smooth',
+                          })
+                      }}
                     />
                   </div>
-                  {/* Banner-style cards inspired by Discord */}
-                  <div className='grid gap-5 md:grid-cols-2 xl:grid-cols-3'>
-                    {rooms
-                      .filter((r) => r.isPublic)
-                      .filter((r) => r.name.toLowerCase().includes(discoverQuery.toLowerCase()))
-                      .map((room) => (
-                        <div
-                          key={room.id}
-                          className='relative overflow-hidden rounded-2xl bg-black/8 dark:bg-white/12 backdrop-blur-md border border-black/12 dark:border-white/25 ring-1 ring-black/10 dark:ring-white/20 shadow-[0_8px_28px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_28px_rgba(255,255,255,0.10)]'
-                        >
-                          {/* Banner area */}
+
+                  {/* Bottom chat bar inside chat window (sticky within card) */}
+                  <ChatInputBar
+                    position={isMobile ? 'sticky' : 'inline'}
+                    className={cn(
+                      previewActive && !isJoined
+                        ? 'pointer-events-none opacity-60'
+                        : ''
+                    )}
+                    placeholder={
+                      previewActive && !isJoined
+                        ? 'Join to start chatting'
+                        : `Message #${selectedChannel?.name ?? 'channel'}`
+                    }
+                    onSubmit={(text) => {
+                      if (!selectedRoom || !selectedChannel) return
+                      if (previewActive && !isJoined) return
+                      const trimmed = text.trim()
+                      if (!trimmed) return
+                      setRooms((prev) =>
+                        prev.map((room) =>
+                          room.id === selectedRoom.id
+                            ? {
+                                ...room,
+                                channels: room.channels.map((ch) =>
+                                  ch.id === selectedChannel.id
+                                    ? {
+                                        ...ch,
+                                        messages: [
+                                          ...ch.messages,
+                                          {
+                                            id: Date.now().toString(),
+                                            senderId: 'you',
+                                            text: trimmed,
+                                            timestamp: new Date().toISOString(),
+                                          },
+                                        ],
+                                      }
+                                    : ch
+                                ),
+                              }
+                            : room
+                        )
+                      )
+                      const el = messagesContainerRef.current
+                      if (el) {
+                        requestAnimationFrame(() => {
+                          el.scrollTo({
+                            top: el.scrollHeight,
+                            behavior: 'smooth',
+                          })
+                        })
+                      }
+                    }}
+                    leftOffset={0}
+                  />
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Discover: Join public rooms */}
+            <TabsContent value='discover' className='space-y-4'>
+              {/* Discover container with dock-style glassmorphic theme */}
+              <Card className='h-[calc(100svh-96px)] overflow-hidden rounded-2xl border border-black/12 bg-black/8 p-0 shadow-[0_6px_20px_rgba(0,0,0,0.12)] ring-1 ring-black/10 backdrop-blur-md dark:border-white/25 dark:bg-white/12 dark:shadow-[0_6px_20px_rgba(255,255,255,0.10)] dark:ring-white/20'>
+                <ScrollArea className='h-[calc(100svh-96px)]'>
+                  <div className='p-6'>
+                    <div className='mb-4'>
+                      <h3 className='text-xl font-semibold'>
+                        Discover communities
+                      </h3>
+                      <p className='text-muted-foreground text-sm'>
+                        Find welcoming rooms by topic, region, or stocks.
+                      </p>
+                    </div>
+                    <div className='mb-6 flex gap-2'>
+                      <Input
+                        value={discoverQuery}
+                        onChange={(e) => setDiscoverQuery(e.target.value)}
+                        placeholder='Search communities…'
+                        aria-label='Search communities'
+                        className='max-w-md'
+                      />
+                    </div>
+                    {/* Banner-style cards inspired by Discord */}
+                    <div className='grid gap-5 md:grid-cols-2 xl:grid-cols-3'>
+                      {rooms
+                        .filter((r) => r.isPublic)
+                        .filter((r) =>
+                          r.name
+                            .toLowerCase()
+                            .includes(discoverQuery.toLowerCase())
+                        )
+                        .map((room) => (
                           <div
-                            className='relative h-28 sm:h-32 md:h-36 cursor-pointer'
-                            role='button'
-                            tabIndex={0}
-                            aria-label={`Preview ${room.name}`}
-                            onClick={() => openPreview(room.id)}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') openPreview(room.id) }}
+                            key={room.id}
+                            className='relative overflow-hidden rounded-2xl border border-black/12 bg-black/8 shadow-[0_8px_28px_rgba(0,0,0,0.14)] ring-1 ring-black/10 backdrop-blur-md dark:border-white/25 dark:bg-white/12 dark:shadow-[0_8px_28px_rgba(255,255,255,0.10)] dark:ring-white/20'
                           >
-                            <div className='absolute inset-0 bg-gradient-to-br from-black/20 via-black/10 to-transparent dark:from-white/10 dark:via-white/8 dark:to-transparent' />
-                            <div className='absolute inset-x-0 bottom-0 flex items-center justify-between px-4 py-3'>
-                              <div className='min-w-0'>
-                                <p className='truncate text-base font-semibold'>{room.name}</p>
-                                <p className='text-muted-foreground text-xs'>{room.memberCount} members</p>
+                            {/* Banner area */}
+                            <div
+                              className='relative h-28 cursor-pointer sm:h-32 md:h-36'
+                              role='button'
+                              tabIndex={0}
+                              aria-label={`Preview ${room.name}`}
+                              onClick={() => openPreview(room.id)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ')
+                                  openPreview(room.id)
+                              }}
+                            >
+                              <div className='absolute inset-0 bg-gradient-to-br from-black/20 via-black/10 to-transparent dark:from-white/10 dark:via-white/8 dark:to-transparent' />
+                              <div className='absolute inset-x-0 bottom-0 flex items-center justify-between px-4 py-3'>
+                                <div className='min-w-0'>
+                                  <p className='truncate text-base font-semibold'>
+                                    {room.name}
+                                  </p>
+                                  <p className='text-muted-foreground text-xs'>
+                                    {room.memberCount} members
+                                  </p>
+                                </div>
+                                <Button
+                                  size='sm'
+                                  onClick={() => joinRoom(room.id)}
+                                  aria-label={`Join ${room.name}`}
+                                  className='rounded-full'
+                                >
+                                  Join
+                                </Button>
                               </div>
-                              <Button size='sm' onClick={() => joinRoom(room.id)} aria-label={`Join ${room.name}`} className='rounded-full'>
-                                Join
-                              </Button>
+                            </div>
+                            {/* Description */}
+                            <div className='px-4 py-3'>
+                              <p className='text-muted-foreground text-sm'>
+                                Chat about markets, news, and ideas.
+                              </p>
                             </div>
                           </div>
-                          {/* Description */}
-                          <div className='px-4 py-3'>
-                            <p className='text-sm text-muted-foreground'>Chat about markets, news, and ideas.</p>
-                          </div>
-                        </div>
-                      ))}
-                    {rooms
-                      .filter((r) => r.isPublic)
-                      .filter((r) => r.name.toLowerCase().includes(discoverQuery.toLowerCase())).length === 0 && (
-                      <p className='text-muted-foreground text-sm'>No communities match your search.</p>
-                    )}
+                        ))}
+                      {rooms
+                        .filter((r) => r.isPublic)
+                        .filter((r) =>
+                          r.name
+                            .toLowerCase()
+                            .includes(discoverQuery.toLowerCase())
+                        ).length === 0 && (
+                        <p className='text-muted-foreground text-sm'>
+                          No communities match your search.
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </ScrollArea>
-            </Card>
-          </TabsContent>
+                </ScrollArea>
+              </Card>
+            </TabsContent>
           </Tabs>
 
           {/* Create Room Dialog */}
@@ -670,21 +822,30 @@ export function TradeTalkies() {
               }
             }}
           >
-            <DialogContent className='sm:max-w-lg rounded-2xl bg-black/8 dark:bg-white/12 backdrop-blur-md border border-black/12 dark:border-white/25 ring-1 ring-black/10 dark:ring-white/20 shadow-[0_8px_28px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_28px_rgba(255,255,255,0.10)]'>
+            <DialogContent className='rounded-2xl border border-black/12 bg-black/8 shadow-[0_8px_28px_rgba(0,0,0,0.14)] ring-1 ring-black/10 backdrop-blur-md sm:max-w-lg dark:border-white/25 dark:bg-white/12 dark:shadow-[0_8px_28px_rgba(255,255,255,0.10)] dark:ring-white/20'>
               <DialogHeader>
                 <DialogTitle>Create a Community</DialogTitle>
               </DialogHeader>
               <div className='space-y-4'>
-                <div className='flex items-center justify-between text-xs text-muted-foreground'>
+                <div className='text-muted-foreground flex items-center justify-between text-xs'>
                   <span>Step {createRoomStep} of 4</span>
-                  <span>{createRoomStep === 1 && 'Basics' || createRoomStep === 2 && 'Tags' || createRoomStep === 3 && 'Age Barrier' || 'Privacy'}</span>
+                  <span>
+                    {(createRoomStep === 1 && 'Basics') ||
+                      (createRoomStep === 2 && 'Tags') ||
+                      (createRoomStep === 3 && 'Age Barrier') ||
+                      'Privacy'}
+                  </span>
                 </div>
 
                 {createRoomStep === 1 && (
                   <div className='space-y-3'>
                     <div className='space-y-2'>
                       <div className='text-sm font-medium'>Community name</div>
-                      <Input placeholder='e.g. Indian Markets' value={roomName} onChange={(e) => setRoomName(e.target.value)} />
+                      <Input
+                        placeholder='e.g. Indian Markets'
+                        value={roomName}
+                        onChange={(e) => setRoomName(e.target.value)}
+                      />
                     </div>
                   </div>
                 )}
@@ -711,7 +872,7 @@ export function TradeTalkies() {
                           <Badge
                             key={tag}
                             variant='outline'
-                            className='group rounded-full px-2 py-1 text-xs bg-black/5 dark:bg-white/10 border-black/15 dark:border-white/20'
+                            className='group rounded-full border-black/15 bg-black/5 px-2 py-1 text-xs dark:border-white/20 dark:bg-white/10'
                             aria-label={`Tag ${tag}`}
                           >
                             <span>{tag}</span>
@@ -726,7 +887,10 @@ export function TradeTalkies() {
                           </Badge>
                         ))}
                         {roomTagList.length === 0 && (
-                          <p className='text-xs text-muted-foreground'>Add a few tags to help people discover your community.</p>
+                          <p className='text-muted-foreground text-xs'>
+                            Add a few tags to help people discover your
+                            community.
+                          </p>
                         )}
                       </div>
                     </div>
@@ -740,20 +904,30 @@ export function TradeTalkies() {
                       <div className='flex items-center justify-between rounded-md border px-3 py-2'>
                         <div>
                           <div className='text-sm'>Require minimum age</div>
-                          <p className='text-xs text-muted-foreground'>Enable and set a minimum age if needed.</p>
+                          <p className='text-muted-foreground text-xs'>
+                            Enable and set a minimum age if needed.
+                          </p>
                         </div>
-                        <Switch checked={ageGateEnabled} onCheckedChange={setAgeGateEnabled} aria-label='Require minimum age' />
+                        <Switch
+                          checked={ageGateEnabled}
+                          onCheckedChange={setAgeGateEnabled}
+                          aria-label='Require minimum age'
+                        />
                       </div>
                       {ageGateEnabled && (
                         <div className='grid grid-cols-2 gap-3'>
                           <div className='space-y-2'>
-                            <div className='text-sm font-medium'>Minimum age</div>
+                            <div className='text-sm font-medium'>
+                              Minimum age
+                            </div>
                             <Input
                               type='number'
                               min={13}
                               max={100}
                               value={ageLimit}
-                              onChange={(e) => setAgeLimit(Number(e.target.value))}
+                              onChange={(e) =>
+                                setAgeLimit(Number(e.target.value))
+                              }
                             />
                           </div>
                         </div>
@@ -766,14 +940,26 @@ export function TradeTalkies() {
                   <div className='space-y-3'>
                     <div className='space-y-2'>
                       <div className='text-sm font-medium'>Privacy</div>
-                      <RadioGroup value={privacy} onValueChange={(v) => setPrivacy(v as 'public' | 'private')}>
+                      <RadioGroup
+                        value={privacy}
+                        onValueChange={(v) =>
+                          setPrivacy(v as 'public' | 'private')
+                        }
+                      >
                         <div className='flex items-center gap-3'>
                           <RadioGroupItem value='public' id='privacy-public' />
-                          <label htmlFor='privacy-public' className='text-sm'>Public (visible and discoverable)</label>
+                          <label htmlFor='privacy-public' className='text-sm'>
+                            Public (visible and discoverable)
+                          </label>
                         </div>
                         <div className='flex items-center gap-3'>
-                          <RadioGroupItem value='private' id='privacy-private' />
-                          <label htmlFor='privacy-private' className='text-sm'>Private (invite-only)</label>
+                          <RadioGroupItem
+                            value='private'
+                            id='privacy-private'
+                          />
+                          <label htmlFor='privacy-private' className='text-sm'>
+                            Private (invite-only)
+                          </label>
                         </div>
                       </RadioGroup>
                     </div>
@@ -781,24 +967,40 @@ export function TradeTalkies() {
                 )}
 
                 <div className='flex items-center justify-between pt-2'>
-                  <Button variant='outline' onClick={() => setCreateRoomOpen(false)}>Cancel</Button>
+                  <Button
+                    variant='outline'
+                    onClick={() => setCreateRoomOpen(false)}
+                  >
+                    Cancel
+                  </Button>
                   <div className='flex gap-2'>
                     <Button
                       variant='outline'
-                      onClick={() => setCreateRoomStep((s) => Math.max(1, s - 1))}
+                      onClick={() =>
+                        setCreateRoomStep((s) => Math.max(1, s - 1))
+                      }
                       disabled={createRoomStep === 1}
                     >
                       Back
                     </Button>
                     {createRoomStep < 4 ? (
                       <Button
-                        onClick={() => setCreateRoomStep((s) => Math.min(4, s + 1))}
-                        disabled={createRoomStep === 1 && roomName.trim().length === 0}
+                        onClick={() =>
+                          setCreateRoomStep((s) => Math.min(4, s + 1))
+                        }
+                        disabled={
+                          createRoomStep === 1 && roomName.trim().length === 0
+                        }
                       >
                         Next
                       </Button>
                     ) : (
-                      <Button onClick={createRoom} disabled={roomName.trim().length === 0}>Create</Button>
+                      <Button
+                        onClick={createRoom}
+                        disabled={roomName.trim().length === 0}
+                      >
+                        Create
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -806,30 +1008,44 @@ export function TradeTalkies() {
             </DialogContent>
           </Dialog>
 
-        {/* Create Channel Dialog */}
-        <Dialog open={createChannelOpen} onOpenChange={setCreateChannelOpen}>
-          <DialogContent className='sm:max-w-lg rounded-2xl bg-black/8 dark:bg-white/12 backdrop-blur-md border border-black/12 dark:border-white/25 ring-1 ring-black/10 dark:ring-white/20 shadow-[0_8px_28px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_28px_rgba(255,255,255,0.10)]'>
-            <DialogHeader>
-              <DialogTitle>Create a Channel</DialogTitle>
-            </DialogHeader>
-            <div className='space-y-3'>
-              <Input placeholder='Channel name' value={channelName} onChange={(e) => setChannelName(e.target.value)} />
-              <div className='flex justify-end gap-2'>
-                <Button variant='outline' onClick={() => setCreateChannelOpen(false)}>Cancel</Button>
-                <Button onClick={createChannel} disabled={!canModerate}>Create</Button>
+          {/* Create Channel Dialog */}
+          <Dialog open={createChannelOpen} onOpenChange={setCreateChannelOpen}>
+            <DialogContent className='rounded-2xl border border-black/12 bg-black/8 shadow-[0_8px_28px_rgba(0,0,0,0.14)] ring-1 ring-black/10 backdrop-blur-md sm:max-w-lg dark:border-white/25 dark:bg-white/12 dark:shadow-[0_8px_28px_rgba(255,255,255,0.10)] dark:ring-white/20'>
+              <DialogHeader>
+                <DialogTitle>Create a Channel</DialogTitle>
+              </DialogHeader>
+              <div className='space-y-3'>
+                <Input
+                  placeholder='Channel name'
+                  value={channelName}
+                  onChange={(e) => setChannelName(e.target.value)}
+                />
+                <div className='flex justify-end gap-2'>
+                  <Button
+                    variant='outline'
+                    onClick={() => setCreateChannelOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={createChannel} disabled={!canModerate}>
+                    Create
+                  </Button>
+                </div>
               </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogContent>
+          </Dialog>
 
           {/* Invite Link Dialog */}
           <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-            <DialogContent className='sm:max-w-lg rounded-2xl bg-black/8 dark:bg-white/12 backdrop-blur-md border border-black/12 dark:border-white/25 ring-1 ring-black/10 dark:ring-white/20 shadow-[0_8px_28px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_28px_rgba(255,255,255,0.10)]'>
+            <DialogContent className='rounded-2xl border border-black/12 bg-black/8 shadow-[0_8px_28px_rgba(0,0,0,0.14)] ring-1 ring-black/10 backdrop-blur-md sm:max-w-lg dark:border-white/25 dark:bg-white/12 dark:shadow-[0_8px_28px_rgba(255,255,255,0.10)] dark:ring-white/20'>
               <DialogHeader>
                 <DialogTitle>Invite link</DialogTitle>
               </DialogHeader>
               <div className='space-y-3'>
-                <Input readOnly value={`https://app.moneybh.ai/invite/${selectedRoomId ?? 'room'}`} />
+                <Input
+                  readOnly
+                  value={`https://app.moneybh.ai/invite/${selectedRoomId ?? 'room'}`}
+                />
                 <div className='flex justify-end'>
                   <Button onClick={() => setInviteOpen(false)}>Done</Button>
                 </div>
@@ -841,10 +1057,17 @@ export function TradeTalkies() {
           {isMobile && (
             <RoomsSidebarSheet
               open={sidebarOpen}
-              rooms={rooms.map((r) => ({ id: r.id, name: r.name, memberCount: r.memberCount }))}
+              rooms={rooms.map((r) => ({
+                id: r.id,
+                name: r.name,
+                memberCount: r.memberCount,
+              }))}
               selectedRoomId={selectedRoomId}
               onOpenChange={setSidebarOpen}
-              onDiscoverClick={() => { setTab('discover'); setSidebarOpen(false); }}
+              onDiscoverClick={() => {
+                setTab('discover')
+                setSidebarOpen(false)
+              }}
               onSelectRoom={(id) => {
                 setTab('myRooms')
                 setSelectedRoomId(id)
@@ -853,9 +1076,18 @@ export function TradeTalkies() {
                 setSidebarOpen(false)
               }}
               onCreateRoomClick={() => setCreateRoomOpen(true)}
-              channels={selectedRoom?.channels.map((c) => ({ id: c.id, name: c.name })) ?? []}
+              channels={
+                selectedRoom?.channels.map((c) => ({
+                  id: c.id,
+                  name: c.name,
+                })) ?? []
+              }
               selectedChannelId={selectedChannelId}
-              onSelectChannel={(id) => { setSelectedChannelId(id); setTab('myRooms'); setSidebarOpen(false); }}
+              onSelectChannel={(id) => {
+                setSelectedChannelId(id)
+                setTab('myRooms')
+                setSidebarOpen(false)
+              }}
               onCreateChannelClick={() => setCreateChannelOpen(true)}
               canModerate={canModerate}
             />

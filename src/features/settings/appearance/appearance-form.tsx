@@ -1,15 +1,26 @@
-import { z } from 'zod'
 import { type SVGProps } from 'react'
+import { z } from 'zod'
 import { useForm } from 'react-hook-form'
+import { Root as Radio, Item } from '@radix-ui/react-radio-group'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { fonts } from '@/config/fonts'
+import { CircleCheck } from 'lucide-react'
+import { IconDir } from '@/assets/custom/icon-dir'
+import { IconLayoutCompact } from '@/assets/custom/icon-layout-compact'
+import { IconLayoutDefault } from '@/assets/custom/icon-layout-default'
+import { IconLayoutFull } from '@/assets/custom/icon-layout-full'
+import { IconSidebarFloating } from '@/assets/custom/icon-sidebar-floating'
+import { IconSidebarInset } from '@/assets/custom/icon-sidebar-inset'
+import { IconSidebarSidebar } from '@/assets/custom/icon-sidebar-sidebar'
+import { IconThemeDark } from '@/assets/custom/icon-theme-dark'
+import { IconThemeLight } from '@/assets/custom/icon-theme-light'
+import { IconThemeSystem } from '@/assets/custom/icon-theme-system'
 import { showSubmittedData } from '@/lib/show-submitted-data'
 import { cn } from '@/lib/utils'
-import { useFont } from '@/context/font-provider'
-import { useTheme } from '@/context/theme-provider'
 import { useDirection } from '@/context/direction-provider'
+import { useFont } from '@/context/font-provider'
 import { useLayout } from '@/context/layout-provider'
-import { useSidebar } from '@/components/ui/sidebar'
+import { useTheme } from '@/context/theme-provider'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -20,19 +31,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { useSidebar } from '@/components/ui/sidebar'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { CircleCheck } from 'lucide-react'
-import { Root as Radio, Item } from '@radix-ui/react-radio-group'
-import { IconLayoutDefault } from '@/assets/custom/icon-layout-default'
-import { IconLayoutCompact } from '@/assets/custom/icon-layout-compact'
-import { IconLayoutFull } from '@/assets/custom/icon-layout-full'
-import { IconThemeDark } from '@/assets/custom/icon-theme-dark'
-import { IconThemeLight } from '@/assets/custom/icon-theme-light'
-import { IconThemeSystem } from '@/assets/custom/icon-theme-system'
-import { IconSidebarInset } from '@/assets/custom/icon-sidebar-inset'
-import { IconSidebarFloating } from '@/assets/custom/icon-sidebar-floating'
-import { IconSidebarSidebar } from '@/assets/custom/icon-sidebar-sidebar'
-import { IconDir } from '@/assets/custom/icon-dir'
 
 const appearanceFormSchema = z.object({
   theme: z.enum(['system', 'light', 'dark']),
@@ -48,14 +48,18 @@ export function AppearanceForm() {
   const { font, setFont, resetFont } = useFont()
   const { theme, setTheme, resetTheme } = useTheme()
   const { defaultDir, dir, setDir } = useDirection()
-  const { collapsible, setCollapsible, variant, setVariant, resetLayout } = useLayout()
+  const { collapsible, setCollapsible, variant, setVariant, resetLayout } =
+    useLayout()
   const { open, setOpen } = useSidebar()
 
   // This can come from your database or API.
   const defaultValues: Partial<AppearanceFormValues> = {
     theme: theme as 'system' | 'light' | 'dark',
     variant,
-    layout: (open ? 'default' : collapsible) as 'default' | 'icon' | 'offcanvas',
+    layout: (open ? 'default' : collapsible) as
+      | 'default'
+      | 'icon'
+      | 'offcanvas',
     direction: dir,
     font,
   }
@@ -99,18 +103,18 @@ export function AppearanceForm() {
     return (
       <Item
         value={item.value}
-        className='group outline-none transition duration-200 ease-in'
+        className='group transition duration-200 ease-in outline-none'
         aria-label={`Select ${item.label.toLowerCase()}`}
         aria-describedby={`${item.value}-description`}
       >
         <div
-          className='ring-border relative rounded-[6px] ring-[1px] group-data-[state=checked]:ring-primary group-data-[state=checked]:shadow-2xl group-focus-visible:ring-2'
+          className='ring-border group-data-[state=checked]:ring-primary relative rounded-[6px] ring-[1px] group-focus-visible:ring-2 group-data-[state=checked]:shadow-2xl'
           role='img'
           aria-hidden='false'
           aria-label={`${item.label} option preview`}
         >
           <CircleCheck
-            className='fill-primary size-6 stroke-white group-data-[state=unchecked]:hidden absolute top-0 right-0 translate-x-1/2 -translate-y-1/2'
+            className='fill-primary absolute top-0 right-0 size-6 translate-x-1/2 -translate-y-1/2 stroke-white group-data-[state=unchecked]:hidden'
             aria-hidden='true'
           />
           <item.icon
@@ -121,7 +125,11 @@ export function AppearanceForm() {
             aria-hidden='true'
           />
         </div>
-        <div className='mt-1 text-xs' id={`${item.value}-description`} aria-live='polite'>
+        <div
+          className='mt-1 text-xs'
+          id={`${item.value}-description`}
+          aria-live='polite'
+        >
           {item.label}
         </div>
       </Item>
@@ -130,16 +138,21 @@ export function AppearanceForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4 sm:space-y-6'>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='space-y-4 sm:space-y-6'
+      >
         {/* Theme with visual figures */}
-        <div className='relative rounded-2xl border border-white/30 dark:border-white/20 bg-white/55 dark:bg-slate-900/30 backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_24px_rgba(255,255,255,0.06)] p-4 sm:p-5'>
+        <div className='relative rounded-2xl border border-white/30 bg-white/55 p-4 shadow-[0_4px_24px_rgba(0,0,0,0.08)] ring-1 ring-black/10 backdrop-blur-xl sm:p-5 dark:border-white/20 dark:bg-slate-900/30 dark:shadow-[0_4px_24px_rgba(255,255,255,0.06)] dark:ring-white/10'>
           <FormField
             control={form.control}
             name='theme'
             render={({ field }) => (
               <FormItem className='space-y-3'>
                 <FormLabel className='text-sm'>Theme</FormLabel>
-                <FormDescription className='text-xs'>Adjust the app color scheme.</FormDescription>
+                <FormDescription className='text-xs'>
+                  Adjust the app color scheme.
+                </FormDescription>
                 <FormControl>
                   <Radio
                     value={field.value}
@@ -149,7 +162,11 @@ export function AppearanceForm() {
                     aria-describedby='theme-description'
                   >
                     {[
-                      { value: 'system', label: 'System', icon: IconThemeSystem },
+                      {
+                        value: 'system',
+                        label: 'System',
+                        icon: IconThemeSystem,
+                      },
                       { value: 'light', label: 'Light', icon: IconThemeLight },
                       { value: 'dark', label: 'Dark', icon: IconThemeDark },
                     ].map((item) => (
@@ -167,14 +184,16 @@ export function AppearanceForm() {
         </div>
 
         {/* Sidebar variant with visual figures */}
-        <div className='relative rounded-2xl border border-white/30 dark:border-white/20 bg-white/50 dark:bg-slate-900/25 backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10 shadow-[0_2px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] p-4 sm:p-5'>
+        <div className='relative rounded-2xl border border-white/30 bg-white/50 p-4 shadow-[0_2px_16px_rgba(0,0,0,0.06)] ring-1 ring-black/10 backdrop-blur-xl sm:p-5 dark:border-white/20 dark:bg-slate-900/25 dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] dark:ring-white/10'>
           <FormField
             control={form.control}
             name='variant'
             render={({ field }) => (
               <FormItem className='space-y-3'>
                 <FormLabel className='text-sm'>Sidebar</FormLabel>
-                <FormDescription className='text-xs'>Choose inset, floating, or standard sidebar.</FormDescription>
+                <FormDescription className='text-xs'>
+                  Choose inset, floating, or standard sidebar.
+                </FormDescription>
                 <FormControl>
                   <Radio
                     value={field.value}
@@ -184,9 +203,21 @@ export function AppearanceForm() {
                     aria-describedby='sidebar-description'
                   >
                     {[
-                      { value: 'inset', label: 'Inset', icon: IconSidebarInset },
-                      { value: 'floating', label: 'Floating', icon: IconSidebarFloating },
-                      { value: 'sidebar', label: 'Sidebar', icon: IconSidebarSidebar },
+                      {
+                        value: 'inset',
+                        label: 'Inset',
+                        icon: IconSidebarInset,
+                      },
+                      {
+                        value: 'floating',
+                        label: 'Floating',
+                        icon: IconSidebarFloating,
+                      },
+                      {
+                        value: 'sidebar',
+                        label: 'Sidebar',
+                        icon: IconSidebarSidebar,
+                      },
                     ].map((item) => (
                       <VisualRadioItem key={item.value} item={item} />
                     ))}
@@ -202,14 +233,16 @@ export function AppearanceForm() {
         </div>
 
         {/* Layout with visual figures */}
-        <div className='relative rounded-2xl border border-white/30 dark:border-white/20 bg-white/50 dark:bg-slate-900/25 backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10 shadow-[0_2px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] p-4 sm:p-5'>
+        <div className='relative rounded-2xl border border-white/30 bg-white/50 p-4 shadow-[0_2px_16px_rgba(0,0,0,0.06)] ring-1 ring-black/10 backdrop-blur-xl sm:p-5 dark:border-white/20 dark:bg-slate-900/25 dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] dark:ring-white/10'>
           <FormField
             control={form.control}
             name='layout'
             render={({ field }) => (
               <FormItem className='space-y-3'>
                 <FormLabel className='text-sm'>Layout</FormLabel>
-                <FormDescription className='text-xs'>Default expanded, compact icon-only, or full layout.</FormDescription>
+                <FormDescription className='text-xs'>
+                  Default expanded, compact icon-only, or full layout.
+                </FormDescription>
                 <FormControl>
                   <Radio
                     value={field.value}
@@ -219,16 +252,29 @@ export function AppearanceForm() {
                     aria-describedby='layout-description'
                   >
                     {[
-                      { value: 'default' as const, label: 'Default', icon: IconLayoutDefault },
-                      { value: 'icon' as const, label: 'Compact', icon: IconLayoutCompact },
-                      { value: 'offcanvas' as const, label: 'Full layout', icon: IconLayoutFull },
+                      {
+                        value: 'default' as const,
+                        label: 'Default',
+                        icon: IconLayoutDefault,
+                      },
+                      {
+                        value: 'icon' as const,
+                        label: 'Compact',
+                        icon: IconLayoutCompact,
+                      },
+                      {
+                        value: 'offcanvas' as const,
+                        label: 'Full layout',
+                        icon: IconLayoutFull,
+                      },
                     ].map((item) => (
                       <VisualRadioItem key={item.value} item={item} />
                     ))}
                   </Radio>
                 </FormControl>
                 <div id='layout-description' className='sr-only'>
-                  Choose between default expanded, compact icon-only, or full layout mode
+                  Choose between default expanded, compact icon-only, or full
+                  layout mode
                 </div>
                 <FormMessage />
               </FormItem>
@@ -237,14 +283,16 @@ export function AppearanceForm() {
         </div>
 
         {/* Direction with visual figures */}
-        <div className='relative rounded-2xl border border-white/30 dark:border-white/20 bg-white/50 dark:bg-slate-900/25 backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10 shadow-[0_2px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] p-4 sm:p-5'>
+        <div className='relative rounded-2xl border border-white/30 bg-white/50 p-4 shadow-[0_2px_16px_rgba(0,0,0,0.06)] ring-1 ring-black/10 backdrop-blur-xl sm:p-5 dark:border-white/20 dark:bg-slate-900/25 dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] dark:ring-white/10'>
           <FormField
             control={form.control}
             name='direction'
             render={({ field }) => (
               <FormItem className='space-y-3'>
                 <FormLabel className='text-sm'>Direction</FormLabel>
-                <FormDescription className='text-xs'>Left-to-right or right-to-left.</FormDescription>
+                <FormDescription className='text-xs'>
+                  Left-to-right or right-to-left.
+                </FormDescription>
                 <FormControl>
                   <Radio
                     value={field.value}
@@ -283,7 +331,7 @@ export function AppearanceForm() {
         </div>
 
         {/* Font */}
-        <div className='relative rounded-2xl border border-white/30 dark:border-white/20 bg-white/50 dark:bg-slate-900/25 backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10 shadow-[0_2px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] p-4 sm:p-5'>
+        <div className='relative rounded-2xl border border-white/30 bg-white/50 p-4 shadow-[0_2px_16px_rgba(0,0,0,0.06)] ring-1 ring-black/10 backdrop-blur-xl sm:p-5 dark:border-white/20 dark:bg-slate-900/25 dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] dark:ring-white/10'>
           <FormField
             control={form.control}
             name='font'
@@ -296,12 +344,12 @@ export function AppearanceForm() {
                     onValueChange={field.onChange}
                     isControlled
                     items={fonts.map((f) => ({ label: f, value: f }))}
-                    className='w-full rounded-lg border border-black/10 dark:border-white/20 ring-1 ring-black/10 dark:ring-white/10 bg-white/70 dark:bg-slate-900/35 backdrop-blur-md px-3 py-2 text-sm'
+                    className='w-full rounded-lg border border-black/10 bg-white/70 px-3 py-2 text-sm ring-1 ring-black/10 backdrop-blur-md dark:border-white/20 dark:bg-slate-900/35 dark:ring-white/10'
                     contentClassName='rounded-xl border border-black/10 dark:border-white/20 bg-white/85 dark:bg-slate-900/80 backdrop-blur-md ring-1 ring-black/10 dark:ring-white/10 shadow-[0_2px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)]'
                     itemClassName='rounded-md px-3 py-2 text-sm focus:bg-black/10 dark:focus:bg-white/12 focus:text-foreground'
                   />
                 </div>
-                <FormDescription className='text-xs font-manrope'>
+                <FormDescription className='font-manrope text-xs'>
                   Set the font you want to use in the dashboard.
                 </FormDescription>
                 <FormMessage />
@@ -326,7 +374,9 @@ export function AppearanceForm() {
           >
             Reset
           </Button>
-          <Button type='submit' variant='secondary' className='rounded-lg'>Update preferences</Button>
+          <Button type='submit' variant='secondary' className='rounded-lg'>
+            Update preferences
+          </Button>
         </div>
       </form>
     </Form>

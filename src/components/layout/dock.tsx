@@ -1,8 +1,23 @@
 'use client'
 
-import { motion, useMotionValue, useSpring, useTransform, type SpringOptions, type MotionValue, AnimatePresence } from 'motion/react'
-import React, { Children, cloneElement, useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  Children,
+  cloneElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { ChevronUp } from 'lucide-react'
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  type SpringOptions,
+  type MotionValue,
+  AnimatePresence,
+} from 'motion/react'
 
 export type DockItemData = {
   icon: React.ReactNode
@@ -61,7 +76,11 @@ function DockItem({
     return val - rect.x - baseItemSize / 2
   })
 
-  const targetSize = useTransform(mouseDistance, [-distance, 0, distance], [baseItemSize, magnification, baseItemSize])
+  const targetSize = useTransform(
+    mouseDistance,
+    [-distance, 0, distance],
+    [baseItemSize, magnification, baseItemSize]
+  )
   const size = useSpring(targetSize, spring)
 
   return (
@@ -85,14 +104,17 @@ function DockItem({
       onFocus={() => isHovered.set(1)}
       onBlur={() => isHovered.set(0)}
       onClick={onClick}
-      className={`relative inline-flex items-center justify-center rounded-xl bg-black/8 dark:bg-white/12 backdrop-blur-md border border-black/12 dark:border-white/25 ring-1 ring-black/10 dark:ring-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_8px_rgba(255,255,255,0.08)] transition-colors hover:bg-black/10 dark:hover:bg-white/14 focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/30 ${className}`}
+      className={`relative inline-flex items-center justify-center rounded-xl border border-black/12 bg-black/8 shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-black/10 backdrop-blur-md transition-colors hover:bg-black/10 focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/25 dark:bg-white/12 dark:shadow-[0_2px_8px_rgba(255,255,255,0.08)] dark:ring-white/20 dark:hover:bg-white/14 dark:focus-visible:ring-white/30 ${className}`}
       tabIndex={0}
-      role="button"
-      aria-haspopup="true"
+      role='button'
+      aria-haspopup='true'
     >
       {Children.map(children, (child) =>
         React.isValidElement(child)
-          ? cloneElement(child as React.ReactElement<{ isHovered?: MotionValue<number> }>, { isHovered })
+          ? cloneElement(
+              child as React.ReactElement<{ isHovered?: MotionValue<number> }>,
+              { isHovered }
+            )
           : child
       )}
     </motion.div>
@@ -124,8 +146,8 @@ function DockLabel({ children, className = '', isHovered }: DockLabelProps) {
           animate={{ opacity: 1, y: -10 }}
           exit={{ opacity: 0, y: 0 }}
           transition={{ duration: 0.2 }}
-          className={`${className} absolute -top-6 left-1/2 w-fit whitespace-pre rounded-md border border-black/10 dark:border-white/30 bg-black/8 dark:bg-white/10 backdrop-blur-md px-2 py-0.5 text-xs text-neutral-800 dark:text-white shadow-[0_2px_6px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_6px_rgba(255,255,255,0.12)]`}
-          role="tooltip"
+          className={`${className} absolute -top-6 left-1/2 w-fit rounded-md border border-black/10 bg-black/8 px-2 py-0.5 text-xs whitespace-pre text-neutral-800 shadow-[0_2px_6px_rgba(0,0,0,0.10)] backdrop-blur-md dark:border-white/30 dark:bg-white/10 dark:text-white dark:shadow-[0_2px_6px_rgba(255,255,255,0.12)]`}
+          role='tooltip'
           style={{ x: '-50%' }}
         >
           {children}
@@ -142,7 +164,11 @@ type DockIconProps = {
 }
 
 function DockIcon({ children, className = '' }: DockIconProps) {
-  return <div className={`flex items-center justify-center ${className}`}>{children}</div>
+  return (
+    <div className={`flex items-center justify-center ${className}`}>
+      {children}
+    </div>
+  )
 }
 
 export default function Dock({
@@ -163,12 +189,18 @@ export default function Dock({
   const startYRef = useRef<number | null>(null)
   const swipeTriggeredRef = useRef(false)
 
-  const maxHeight = useMemo(() => Math.max(dockHeight, magnification + magnification / 2 + 4), [magnification, dockHeight])
+  const maxHeight = useMemo(
+    () => Math.max(dockHeight, magnification + magnification / 2 + 4),
+    [magnification, dockHeight]
+  )
   const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight])
   const height = useSpring(heightRow, spring)
 
   return (
-    <motion.div style={{ height, scrollbarWidth: 'none', touchAction: 'pan-y' }} className="mx-2 flex max-w-full items-center select-none">
+    <motion.div
+      style={{ height, scrollbarWidth: 'none', touchAction: 'pan-y' }}
+      className='mx-2 flex max-w-full items-center select-none'
+    >
       <motion.div
         onPointerDown={(e) => {
           isHovered.set(1)
@@ -180,7 +212,11 @@ export default function Dock({
         onPointerMove={(e) => {
           isHovered.set(1)
           mouseX.set(e.clientX)
-          if (isPressing.get() === 1 && startYRef.current != null && !swipeTriggeredRef.current) {
+          if (
+            isPressing.get() === 1 &&
+            startYRef.current != null &&
+            !swipeTriggeredRef.current
+          ) {
             const deltaY = startYRef.current - e.clientY
             if (deltaY > 48) {
               swipeTriggeredRef.current = true
@@ -209,16 +245,16 @@ export default function Dock({
           startYRef.current = null
           swipeTriggeredRef.current = false
         }}
-        className={`${className} absolute bottom-2 left-1/2 transform -translate-x-1/2 flex items-end w-fit gap-4 rounded-3xl bg-black/10 dark:bg-white/10 backdrop-blur-md border border-black/10 dark:border-white/30 ring-1 ring-black/10 dark:ring-white/15 shadow-[0_2px_10px_rgba(0,0,0,0.10)] dark:shadow-[0_2px_10px_rgba(255,255,255,0.10)] pb-2 px-4 ${collapsed ? 'pointer-events-none' : 'pointer-events-auto'}`}
+        className={`${className} absolute bottom-2 left-1/2 flex w-fit -translate-x-1/2 transform items-end gap-4 rounded-3xl border border-black/10 bg-black/10 px-4 pb-2 shadow-[0_2px_10px_rgba(0,0,0,0.10)] ring-1 ring-black/10 backdrop-blur-md dark:border-white/30 dark:bg-white/10 dark:shadow-[0_2px_10px_rgba(255,255,255,0.10)] dark:ring-white/15 ${collapsed ? 'pointer-events-none' : 'pointer-events-auto'}`}
         animate={{ y: collapsed ? 80 : 0, opacity: collapsed ? 0 : 1 }}
         transition={{ type: 'spring', stiffness: 240, damping: 22 }}
         style={{ height: panelHeight }}
-        role="toolbar"
-        aria-label="Application dock"
+        role='toolbar'
+        aria-label='Application dock'
       >
         {/* caret chevron above dock */}
         <button
-          type="button"
+          type='button'
           onClick={(e) => {
             e.stopPropagation()
             onSwipeUp?.()
@@ -231,11 +267,11 @@ export default function Dock({
               onSwipeUp?.()
             }
           }}
-          aria-label="Open apps"
-          title="All Pages"
-          className="absolute -top-6 left-1/2 -translate-x-1/2 z-10 pointer-events-auto text-neutral-700 dark:text-white opacity-70 hover:opacity-100"
+          aria-label='Open apps'
+          title='All Pages'
+          className='pointer-events-auto absolute -top-6 left-1/2 z-10 -translate-x-1/2 text-neutral-700 opacity-70 hover:opacity-100 dark:text-white'
         >
-          <ChevronUp className="h-5 w-5" />
+          <ChevronUp className='h-5 w-5' />
         </button>
         {items.map((item, index) => (
           <DockItem

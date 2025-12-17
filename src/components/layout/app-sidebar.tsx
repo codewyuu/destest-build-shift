@@ -16,7 +16,8 @@ export function AppSidebar() {
   const { collapsible, variant } = useLayout()
   const isMobile = useIsMobile()
   // Ensure desktop collapse shows icon rail instead of fully offcanvas
-  const safeCollapsible = !isMobile && collapsible === 'offcanvas' ? 'icon' : collapsible
+  const safeCollapsible =
+    !isMobile && collapsible === 'offcanvas' ? 'icon' : collapsible
   return (
     <Sidebar collapsible={safeCollapsible} variant={variant}>
       <SidebarHeader>

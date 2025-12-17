@@ -1,4 +1,12 @@
-import { Monitor, Bell, Palette, Settings, Wrench, UserCog, Users2 } from 'lucide-react'
+import {
+  Monitor,
+  Bell,
+  Palette,
+  Settings,
+  Wrench,
+  UserCog,
+  Users2,
+} from 'lucide-react'
 import { type SidebarData } from '../types'
 
 export const sidebarData: SidebarData = {

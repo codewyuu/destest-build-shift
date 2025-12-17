@@ -27,7 +27,9 @@ export const useProfileStore = create<ProfileState>()((set) => ({
         if (url) window.localStorage.setItem(LS_KEY, url)
         else window.localStorage.removeItem(LS_KEY)
       }
-    } catch { void 0 }
+    } catch {
+      void 0
+    }
     set((state) => ({ ...state, avatarUrl: url }))
   },
   setAvatarFile: async (file: File) => {
@@ -46,17 +48,23 @@ export const useProfileStore = create<ProfileState>()((set) => ({
           if (typeof window !== 'undefined') {
             window.localStorage.setItem(LS_KEY, dataUrl)
           }
-        } catch { void 0 }
+        } catch {
+          void 0
+        }
         return { ...state, avatarUrl: dataUrl }
       })
-    } catch { void 0 }
+    } catch {
+      void 0
+    }
   },
   reset: () => {
     try {
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem(LS_KEY)
       }
-    } catch { void 0 }
+    } catch {
+      void 0
+    }
     set((state) => ({ ...state, avatarUrl: null }))
   },
 }))

@@ -1,10 +1,14 @@
 import { useState } from 'react'
-import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Button } from '@/components/ui/button'
 import { Plus, Compass } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet'
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from '@/components/ui/sidebar'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 type RoomItem = {
   id: string
@@ -50,81 +54,104 @@ export function RoomsSidebarSheet({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        side="left"
-        className="inset-y-0 start-0 h-full w-[86%] sm:max-w-sm border-e bg-black/10 dark:bg-white/10 backdrop-blur-md ring-1 ring-black/10 dark:ring-white/15 border border-black/10 dark:border-white/30 text-neutral-800 dark:text-white"
+        side='left'
+        className='inset-y-0 start-0 h-full w-[86%] border border-e border-black/10 bg-black/10 text-neutral-800 ring-1 ring-black/10 backdrop-blur-md sm:max-w-sm dark:border-white/30 dark:bg-white/10 dark:text-white dark:ring-white/15'
       >
-        <SheetHeader className="h-full px-4 pr-16 pt-3 flex flex-col">
-          <Tabs value={tab} onValueChange={(v) => setTab(v as 'communities' | 'channels')}>
-            <div className="flex items-center justify-between">
-              <TabsList className="bg-black/8 dark:bg-white/8 ring-1 ring-black/10 dark:ring-white/15">
+        <SheetHeader className='flex h-full flex-col px-4 pt-3 pr-16'>
+          <Tabs
+            value={tab}
+            onValueChange={(v) => setTab(v as 'communities' | 'channels')}
+          >
+            <div className='flex items-center justify-between'>
+              <TabsList className='bg-black/8 ring-1 ring-black/10 dark:bg-white/8 dark:ring-white/15'>
                 <TabsTrigger
-                  value="communities"
-                  className="data-[state=active]:bg-black/12 dark:data-[state=active]:bg-white/12 text-foreground dark:text-foreground"
+                  value='communities'
+                  className='text-foreground dark:text-foreground data-[state=active]:bg-black/12 dark:data-[state=active]:bg-white/12'
                 >
                   Communities
                 </TabsTrigger>
                 <TabsTrigger
-                  value="channels"
-                  className="data-[state=active]:bg-black/12 dark:data-[state=active]:bg-white/12 text-foreground dark:text-foreground"
+                  value='channels'
+                  className='text-foreground dark:text-foreground data-[state=active]:bg-black/12 dark:data-[state=active]:bg-white/12'
                 >
                   Channels
                 </TabsTrigger>
               </TabsList>
               {tab === 'communities' ? (
                 <Button
-                  variant="outline"
-                  size="icon"
+                  variant='outline'
+                  size='icon'
                   onClick={onCreateRoomClick}
-                  aria-label="Create community"
-                  className="text-foreground bg-black/12 dark:bg-white/12 border-black/20 dark:border-white/20 ring-1 ring-black/10 dark:ring-white/15 hover:bg-black/20 dark:hover:bg-white/20"
+                  aria-label='Create community'
+                  className='text-foreground border-black/20 bg-black/12 ring-1 ring-black/10 hover:bg-black/20 dark:border-white/20 dark:bg-white/12 dark:ring-white/15 dark:hover:bg-white/20'
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className='h-4 w-4' />
                 </Button>
               ) : canModerate ? (
                 <Button
-                  variant="outline"
-                  size="icon"
+                  variant='outline'
+                  size='icon'
                   onClick={onCreateChannelClick}
-                  aria-label="Create channel"
-                  className="text-foreground bg-black/12 dark:bg-white/12 border-black/20 dark:border-white/20 ring-1 ring-black/10 dark:ring-white/15 hover:bg-black/20 dark:hover:bg-white/20"
+                  aria-label='Create channel'
+                  className='text-foreground border-black/20 bg-black/12 ring-1 ring-black/10 hover:bg-black/20 dark:border-white/20 dark:bg-white/12 dark:ring-white/15 dark:hover:bg-white/20'
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className='h-4 w-4' />
                 </Button>
               ) : (
-                <div className="h-9" />
+                <div className='h-9' />
               )}
             </div>
-            <TabsContent value="communities" className="mt-2 flex-1">
-              <ScrollArea className="h-full px-2 pb-6">
-                <SidebarMenu className="gap-2">
+            <TabsContent value='communities' className='mt-2 flex-1'>
+              <ScrollArea className='h-full px-2 pb-6'>
+                <SidebarMenu className='gap-2'>
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild size="lg" className="rounded-lg px-3 py-2 text-foreground">
-                      <button type="button" className="w-full text-left" onClick={() => onDiscoverClick?.()}>
-                        <div className="min-w-0 flex items-center gap-2">
-                          <Compass className="h-4 w-4" />
-                          <span className="truncate font-medium">Discover</span>
+                    <SidebarMenuButton
+                      asChild
+                      size='lg'
+                      className='text-foreground rounded-lg px-3 py-2'
+                    >
+                      <button
+                        type='button'
+                        className='w-full text-left'
+                        onClick={() => onDiscoverClick?.()}
+                      >
+                        <div className='flex min-w-0 items-center gap-2'>
+                          <Compass className='h-4 w-4' />
+                          <span className='truncate font-medium'>Discover</span>
                         </div>
                       </button>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                   {rooms.length === 0 && (
-                    <div className="px-2 py-2 text-xs text-muted-foreground">No rooms yet. Create one to start chatting.</div>
+                    <div className='text-muted-foreground px-2 py-2 text-xs'>
+                      No rooms yet. Create one to start chatting.
+                    </div>
                   )}
                   {rooms.map((room) => (
                     <SidebarMenuItem key={room.id}>
                       <SidebarMenuButton
                         asChild
-                        size="lg"
+                        size='lg'
                         isActive={selectedRoomId === room.id}
-                        className="rounded-lg px-3 py-2 text-foreground data-[active=true]:bg-black/12 dark:data-[active=true]:bg-white/12"
+                        className='text-foreground rounded-lg px-3 py-2 data-[active=true]:bg-black/12 dark:data-[active=true]:bg-white/12'
                       >
-                        <button type="button" className="w-full text-left" onClick={() => onSelectRoom(room.id)}>
-                          <div className="min-w-0">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="truncate font-medium">{room.name}</span>
-                              <span className="text-xs text-muted-foreground">{room.memberCount}</span>
+                        <button
+                          type='button'
+                          className='w-full text-left'
+                          onClick={() => onSelectRoom(room.id)}
+                        >
+                          <div className='min-w-0'>
+                            <div className='flex items-center justify-between gap-2'>
+                              <span className='truncate font-medium'>
+                                {room.name}
+                              </span>
+                              <span className='text-muted-foreground text-xs'>
+                                {room.memberCount}
+                              </span>
                             </div>
-                            <p className="text-xs text-foreground/70 truncate">Tap to view channels</p>
+                            <p className='text-foreground/70 truncate text-xs'>
+                              Tap to view channels
+                            </p>
                           </div>
                         </button>
                       </SidebarMenuButton>
@@ -133,23 +160,31 @@ export function RoomsSidebarSheet({
                 </SidebarMenu>
               </ScrollArea>
             </TabsContent>
-            <TabsContent value="channels" className="mt-2 flex-1">
-              <ScrollArea className="h-full px-2 pb-6">
+            <TabsContent value='channels' className='mt-2 flex-1'>
+              <ScrollArea className='h-full px-2 pb-6'>
                 {(!selectedRoomId || channels.length === 0) && (
-                  <div className="px-3 py-2 text-xs text-muted-foreground">Select a community to view channels.</div>
+                  <div className='text-muted-foreground px-3 py-2 text-xs'>
+                    Select a community to view channels.
+                  </div>
                 )}
-                <SidebarMenu className="gap-2">
+                <SidebarMenu className='gap-2'>
                   {channels.map((ch) => (
                     <SidebarMenuItem key={ch.id}>
                       <SidebarMenuButton
                         asChild
-                        size="lg"
+                        size='lg'
                         isActive={selectedChannelId === ch.id}
-                        className="rounded-lg px-3 py-2 text-foreground data-[active=true]:bg-black/12 dark:data-[active=true]:bg-white/12"
+                        className='text-foreground rounded-lg px-3 py-2 data-[active=true]:bg-black/12 dark:data-[active=true]:bg-white/12'
                       >
-                        <button type="button" className="w-full text-left" onClick={() => onSelectChannel?.(ch.id)}>
-                          <div className="min-w-0">
-                            <span className="truncate font-medium"># {ch.name}</span>
+                        <button
+                          type='button'
+                          className='w-full text-left'
+                          onClick={() => onSelectChannel?.(ch.id)}
+                        >
+                          <div className='min-w-0'>
+                            <span className='truncate font-medium'>
+                              # {ch.name}
+                            </span>
                           </div>
                         </button>
                       </SidebarMenuButton>

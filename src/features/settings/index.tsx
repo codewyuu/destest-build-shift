@@ -23,7 +23,7 @@ export function Settings() {
       </Header>
 
       <Main>
-        <div className='flex flex-1 min-h-0 w-full overflow-y-auto p-1'>
+        <div className='flex min-h-0 w-full flex-1 overflow-y-auto p-1'>
           <Outlet />
         </div>
       </Main>

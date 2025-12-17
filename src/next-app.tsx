@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { AxiosError } from 'axios'
 import {
   QueryCache,
@@ -5,14 +6,13 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { routeTree } from '@/routeTree.gen'
 import { toast } from 'sonner'
-import { useMemo } from 'react'
 import { useAuthStore } from '@/stores/auth-store'
 import { handleServerError } from '@/lib/handle-server-error'
 import { DirectionProvider } from '@/context/direction-provider'
 import { FontProvider } from '@/context/font-provider'
 import { ThemeProvider } from '@/context/theme-provider'
-import { routeTree } from '@/routeTree.gen'
 
 const isProd = process.env.NODE_ENV === 'production'
 const routerRef: { current: ReturnType<typeof createRouter> | null } = {
@@ -108,4 +108,3 @@ export function ClientApp() {
     </QueryClientProvider>
   )
 }
-

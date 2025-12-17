@@ -52,7 +52,7 @@ export function NotificationsForm() {
         className='space-y-4 sm:space-y-6'
       >
         {/* Notify me about... */}
-        <div className='relative rounded-2xl border border-white/30 dark:border-white/20 bg-white/55 dark:bg-slate-900/30 backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10 shadow-[0_4px_24px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_24px_rgba(255,255,255,0.06)] p-4 sm:p-5'>
+        <div className='relative rounded-2xl border border-white/30 bg-white/55 p-4 shadow-[0_4px_24px_rgba(0,0,0,0.08)] ring-1 ring-black/10 backdrop-blur-xl sm:p-5 dark:border-white/20 dark:bg-slate-900/30 dark:shadow-[0_4px_24px_rgba(255,255,255,0.06)] dark:ring-white/10'>
           <FormField
             control={form.control}
             name='type'
@@ -69,13 +69,17 @@ export function NotificationsForm() {
                       <FormControl>
                         <RadioGroupItem value='all' />
                       </FormControl>
-                      <FormLabel className='font-normal'>All new messages</FormLabel>
+                      <FormLabel className='font-normal'>
+                        All new messages
+                      </FormLabel>
                     </FormItem>
                     <FormItem className='flex items-center gap-3'>
                       <FormControl>
                         <RadioGroupItem value='mentions' />
                       </FormControl>
-                      <FormLabel className='font-normal'>Direct messages and mentions</FormLabel>
+                      <FormLabel className='font-normal'>
+                        Direct messages and mentions
+                      </FormLabel>
                     </FormItem>
                     <FormItem className='flex items-center gap-3'>
                       <FormControl>
@@ -92,7 +96,7 @@ export function NotificationsForm() {
         </div>
 
         {/* Email notifications list */}
-        <div className='relative rounded-2xl border border-white/30 dark:border-white/20 bg-white/50 dark:bg-slate-900/25 backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10 shadow-[0_2px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)]'>
+        <div className='relative rounded-2xl border border-white/30 bg-white/50 shadow-[0_2px_16px_rgba(0,0,0,0.06)] ring-1 ring-black/10 backdrop-blur-xl dark:border-white/20 dark:bg-slate-900/25 dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] dark:ring-white/10'>
           <div className='px-4 pt-3 sm:px-5 sm:pt-3'>
             <span className='text-sm font-medium'>Email Notifications</span>
           </div>
@@ -104,11 +108,18 @@ export function NotificationsForm() {
                 render={({ field }) => (
                   <FormItem className='flex items-center justify-between px-4 py-4 sm:px-5'>
                     <div className='min-w-0'>
-                      <FormLabel className='text-base'>Communication emails</FormLabel>
-                      <FormDescription>Receive emails about your account activity.</FormDescription>
+                      <FormLabel className='text-base'>
+                        Communication emails
+                      </FormLabel>
+                      <FormDescription>
+                        Receive emails about your account activity.
+                      </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -121,19 +132,24 @@ export function NotificationsForm() {
                 render={({ field }) => (
                   <FormItem className='flex items-center justify-between px-4 py-4 sm:px-5'>
                     <div className='min-w-0'>
-                      <FormLabel className='text-base'>Marketing emails</FormLabel>
-                      <FormDescription>Receive emails about new products, features, and more.</FormDescription>
+                      <FormLabel className='text-base'>
+                        Marketing emails
+                      </FormLabel>
+                      <FormDescription>
+                        Receive emails about new products, features, and more.
+                      </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
                     </FormControl>
                   </FormItem>
                 )}
               />
             </li>
-            <li>
-              {/* Removed: Social emails option */}
-            </li>
+            <li>{/* Removed: Social emails option */}</li>
             <li>
               <FormField
                 control={form.control}
@@ -141,11 +157,20 @@ export function NotificationsForm() {
                 render={({ field }) => (
                   <FormItem className='flex items-center justify-between px-4 py-4 sm:px-5'>
                     <div className='min-w-0'>
-                      <FormLabel className='text-base'>Security emails</FormLabel>
-                      <FormDescription>Receive emails about your account activity and security.</FormDescription>
+                      <FormLabel className='text-base'>
+                        Security emails
+                      </FormLabel>
+                      <FormDescription>
+                        Receive emails about your account activity and security.
+                      </FormDescription>
                     </div>
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} disabled aria-readonly />
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled
+                        aria-readonly
+                      />
                     </FormControl>
                   </FormItem>
                 )}
@@ -155,20 +180,28 @@ export function NotificationsForm() {
         </div>
 
         {/* Mobile settings note */}
-        <div className='relative rounded-2xl border border-white/30 dark:border-white/20 bg-white/50 dark:bg-slate-900/25 backdrop-blur-xl ring-1 ring-black/10 dark:ring-white/10 shadow-[0_2px_16px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] px-4 py-3 sm:px-5 sm:py-4'>
+        <div className='relative rounded-2xl border border-white/30 bg-white/50 px-4 py-3 shadow-[0_2px_16px_rgba(0,0,0,0.06)] ring-1 ring-black/10 backdrop-blur-xl sm:px-5 sm:py-4 dark:border-white/20 dark:bg-slate-900/25 dark:shadow-[0_2px_16px_rgba(255,255,255,0.05)] dark:ring-white/10'>
           <FormField
             control={form.control}
             name='mobile'
             render={({ field }) => (
               <FormItem className='flex items-start gap-3'>
                 <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
                 </FormControl>
                 <div className='space-y-1 leading-none'>
-                  <FormLabel className='text-sm'>Use different settings for my mobile devices</FormLabel>
+                  <FormLabel className='text-sm'>
+                    Use different settings for my mobile devices
+                  </FormLabel>
                   <FormDescription>
                     You can manage your mobile notifications in the{' '}
-                    <Link to='/settings' className='underline decoration-dashed underline-offset-4 hover:decoration-solid'>
+                    <Link
+                      to='/settings'
+                      className='underline decoration-dashed underline-offset-4 hover:decoration-solid'
+                    >
                       mobile settings
                     </Link>{' '}
                     page.
@@ -180,7 +213,9 @@ export function NotificationsForm() {
         </div>
 
         <div className='flex justify-end'>
-          <Button type='submit' variant='secondary' className='rounded-lg'>Update notifications</Button>
+          <Button type='submit' variant='secondary' className='rounded-lg'>
+            Update notifications
+          </Button>
         </div>
       </form>
     </Form>

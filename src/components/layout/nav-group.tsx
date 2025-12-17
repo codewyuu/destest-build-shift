@@ -112,11 +112,11 @@ function SidebarMenuCollapsible({
                   asChild
                   isActive={checkIsActive(href, subItem)}
                 >
-                    <Link to={subItem.url} onClick={() => setOpenMobile(false)}>
+                  <Link to={subItem.url} onClick={() => setOpenMobile(false)}>
                     {subItem.icon && React.createElement(subItem.icon)}
                     <span>{subItem.title}</span>
                     {subItem.badge && <NavBadge>{subItem.badge}</NavBadge>}
-                    </Link>
+                  </Link>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             ))}

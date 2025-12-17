@@ -1,7 +1,7 @@
 import { Paperclip, Mic } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { Button } from '@/components/ui/button'
 
 type ChatInputBarProps = {
   className?: string
@@ -28,27 +28,31 @@ export function ChatInputBar({
     <div
       className={cn(
         resolvedPosition === 'sticky'
-          ? 'sticky bottom-0 z-40 w-full px-3 pb-3 pt-1 transition-[margin] duration-200 ease-out'
+          ? 'sticky bottom-0 z-40 w-full px-3 pt-1 pb-3 transition-[margin] duration-200 ease-out'
           : resolvedPosition === 'absolute'
-          ? 'absolute bottom-0 z-40 w-full px-3 pb-3 pt-1 transition-[margin] duration-200 ease-out'
-          : resolvedPosition === 'inline'
-          ? 'w-full px-3 pb-3 pt-1 transition-[margin] duration-200 ease-out'
-          : 'fixed bottom-0 z-40 w-full px-3 pb-3 pt-1 transition-[margin] duration-200 ease-out',
+            ? 'absolute bottom-0 z-40 w-full px-3 pt-1 pb-3 transition-[margin] duration-200 ease-out'
+            : resolvedPosition === 'inline'
+              ? 'w-full px-3 pt-1 pb-3 transition-[margin] duration-200 ease-out'
+              : 'fixed bottom-0 z-40 w-full px-3 pt-1 pb-3 transition-[margin] duration-200 ease-out',
         className
       )}
-      style={{ marginLeft: leftOffset, width: `calc(100% - ${leftOffset ?? 0}px)` }}
+      style={{
+        marginLeft: leftOffset,
+        width: `calc(100% - ${leftOffset ?? 0}px)`,
+      }}
     >
       <form
         className={cn(
-          'bg-black/8 dark:bg-white/12 backdrop-blur-md',
-          'border border-black/12 dark:border-white/25 ring-1 ring-black/10 dark:ring-white/20',
+          'bg-black/8 backdrop-blur-md dark:bg-white/12',
+          'border border-black/12 ring-1 ring-black/10 dark:border-white/25 dark:ring-white/20',
           'shadow-[0_6px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_6px_20px_rgba(255,255,255,0.10)]',
           'mx-auto flex h-12 w-full max-w-3xl items-center gap-2 rounded-full px-4'
         )}
         onSubmit={(e) => {
           e.preventDefault()
           const form = e.currentTarget
-          const input = form.querySelector<HTMLInputElement>('input[type="text"]')
+          const input =
+            form.querySelector<HTMLInputElement>('input[type="text"]')
           const value = input?.value.trim() ?? ''
           if (value && onSubmit) onSubmit(value)
           if (input) input.value = ''
@@ -62,7 +66,7 @@ export function ChatInputBar({
           onClick={onAttachClick}
           aria-label='Attach'
         >
-          <Paperclip className='size-5 stroke-muted-foreground' />
+          <Paperclip className='stroke-muted-foreground size-5' />
         </Button>
 
         <input
@@ -79,7 +83,7 @@ export function ChatInputBar({
           onClick={onMicClick}
           aria-label='Voice input'
         >
-          <Mic className='size-5 stroke-muted-foreground' />
+          <Mic className='stroke-muted-foreground size-5' />
         </Button>
       </form>
     </div>
