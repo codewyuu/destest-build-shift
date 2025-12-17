@@ -1,0 +1,67 @@
+import '@/styles/index.css'
+import type { AppProps } from 'next/app'
+import Head from 'next/head'
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <>
+      <Head>
+        <meta charSet='UTF-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+
+        <title>Moneybh.Ai</title>
+        <meta name='title' content='Moneybh.Ai' />
+        <meta name='description' content='Your AI financial assistant' />
+
+        <link
+          rel='icon'
+          type='image/svg+xml'
+          href='/images/favicon.svg'
+          media='(prefers-color-scheme: light)'
+        />
+        <link
+          rel='icon'
+          type='image/svg+xml'
+          href='/images/favicon_light.svg'
+          media='(prefers-color-scheme: dark)'
+        />
+        <link
+          rel='icon'
+          type='image/png'
+          href='/images/favicon.png'
+          media='(prefers-color-scheme: light)'
+        />
+        <link
+          rel='icon'
+          type='image/png'
+          href='/images/favicon_light.png'
+          media='(prefers-color-scheme: dark)'
+        />
+
+        <meta property='og:type' content='website' />
+        <meta property='og:url' content='https://moneybhai.ai' />
+        <meta property='og:title' content='Moneybh.Ai' />
+        <meta property='og:description' content='Your AI financial assistant' />
+        <meta property='og:image' content='https://moneybhai.ai/images/moneybhai.png' />
+
+        <meta property='twitter:card' content='summary_large_image' />
+        <meta property='twitter:url' content='https://moneybhai.ai' />
+        <meta property='twitter:title' content='Moneybh.Ai' />
+        <meta property='twitter:description' content='Your AI financial assistant' />
+        <meta property='twitter:image' content='https://moneybhai.ai/images/moneybhai.png' />
+
+        <link rel='preconnect' href='https://fonts.googleapis.com' />
+        <link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='' />
+        <link
+          href='https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&display=swap'
+          rel='stylesheet'
+        />
+
+        <meta name='theme-color' content='#fff' />
+      </Head>
+
+      <Component {...pageProps} />
+    </>
+  )
+}
+
