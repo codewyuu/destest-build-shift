@@ -71,8 +71,7 @@ export function UserAuthForm({
         auth.setUser(mockUser)
         auth.setAccessToken('mock-access-token')
 
-        // Redirect to the stored location or default to dashboard
-        const targetPath = redirectTo || '/'
+        const targetPath = redirectTo || '/_authenticated/'
         navigate({ to: targetPath, replace: true })
 
         return `Welcome back, ${data.email}!`
